@@ -1,0 +1,65 @@
+<center>
+    <font face="宋体" color="black" size="4">
+        <h1>架构中各功能的设计</h1>
+    </font>
+</center>
+<center>
+    <img src="http://localhost:4000/pic?image=architecture.png" width="25%" height="15%" alt="Fabric SDK与Fabric网络交互的设计模式" />
+</center>
+<font face="宋体" color="black" size="4">
+    <p>&nbsp;&nbsp;Fabric中间件需要包含：通信、消息管理、消息处理、负载均衡、日志管理和中间件状态监控，共六块。</p>
+    <p>&nbsp;&nbsp;本中间件采用NodeJS进行开发。Node是以事件驱动的，下面描述每个模块的时候分为两部分：初始化部分和事件驱动部分。</p>
+    <p>&nbsp;&nbsp;通信功能由TLS通信进程来完成，其主要工作如下：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;初始化部分：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;1、建立并维护回应消息队列用于存储未来的即发送给业务系统的消息。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;2、建立TLS服务器负责与业务系统建立连接。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;3、向消息管理进程发送初始成功消息。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;事件部分：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;1、业务系统与Fabric SDK中间件建立连接：TLS通信模块做身份认证；通过认证后，查看回应消息队列是否含有消息，若有消息则将队列中的消息发送给业务系统。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;2、收到业务系统发过来的消息：先检查消息是否符合规范，若符合规范则将请求添加上普通消息的代码发送给消息管理进程。{processCode:0,message:msg}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;3、收到消息管理进程发送过来的消息(普通消息)：在确认与业务系统连接正常的情况下，将消息发送给业务系统。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;3、收到消息管理进程发送过来的消息(获取消息队列状态)：将回应消息队列状态发送给消息管理进程。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;4、业务系统突然掉线：将消息管理进程发送过来的消息存储在回应消息队列；在业务系统再次连接时，将消息队列中的消息发送给业务系统。</p>
+    <p>&nbsp;&nbsp;消息管理的功能由消息管理进程来完成，其主要工作如下：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;初始化部分：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;1、解析配置文件。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;2、创建并维护请求消息队列；创建并维护用于监控各进程状态的进程PID表；创建并维护用于监控工作进程状态的工作进程状态表。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;3、启动TLS通信进程、多个工作进程和中间件监控进程。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;4、不断判断请求消息队列中是否消息、工作进程组中是否有空闲进程。若满足消息队列中有消息且工作进程组中有空闲进程，则在消息队列中取出一个消息发送给空闲的工作进程，并将工作进程在工作进程状态表中的状态值改为RUN。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;事件部分：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;1、收到TLS通信进程发过来的消息(初始化成功)：将通信进程PID存入PID列表。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;2、收到工作进程发过来的消息(初始化成功)：将工作进程PID存入PID列表，并设置工作进程状态表中对应的状态值为PAUSE。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;3、收到中间件监控进程发过来的消息(初始化成功)：将中间件监控进程PID存入PID列表。并将各进程PID表回应给中间件监控进程。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;4、收到通信进程发过来的消息(普通消息)：将消息存入请求消息队列。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;5、收到工作进程发过来的消息(普通消息)：将消息存发送给TLS通信进程；将工作进程状态表中对应的状态值该为PAUSE。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;6、接收到中间件监控进程的消息(获取工作进程状态)：给中间件监控进程发送工作进程状态表。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;7、接收到中间件监控进程的消息(获取消息队列状态)：向TLS通信进程发送消息(获取消息队列状态)。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;8、接收到TLS通信进程的消息(获取消息队列状态)：给中间件监控进程发送获取消息队列状态消息，消息内容包括TLS通信进程提供的回应消息队列状态和消息管理进程维护的请求消息队列状态。</p>
+    <p>&nbsp;&nbsp;消息处理的工作由一组工作进程来完成，其主要工作如下：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;初始化部分：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;1、向消息管理进程回应进程初始化成功消息。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;事件部分：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;1、接收到消息管理进程发送的消息，按照操作码解析消息数据部分并调用相应操作的函数，将处理结果作为普通消息发送给消息处理进程。</p>
+    <p>&nbsp;&nbsp;负载均衡不需要启动新的进程，是消息处理过程中的一步，存在于与区块网络交互的Fabric SDK函数代码中。其实现思路如下：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;1、若指定连接文件名，则不进行负载均衡。按照该连接文件与区块链网络进行通信。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;2、指定连接文件目录，则在该目录下选取一个连接文件与区块链网络通信，从而达到负载均衡的效果。</p>
+    <p>&nbsp;&nbsp;日志管理并不需要启动新的进程。各进程在进行命令行输出时，调用设计好的logger.js进行日志输出。其功能如下：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;1、NodeJS有专门的日志管理模块log4js，日志系统基于log4js这个模块。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;2、通信、消息管理、消息处理存储于./logs目录下，并每天更换一次存储文件。如：logs/manageProcess.2020-10-26.log。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;3、过滤日志中的错误消息统一存储于./logs/error.log文件中。</p>
+    <p>&nbsp;&nbsp;中间件状态监控功能由中间件状态监控由中间件状态监控进程负责，其主要工作如下：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;初始化部分：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;1、延迟等待2s，等待各进程初始化完毕。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;2、创建各进程PID表、工作进程状态表、消息队列状态。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;3、启动用于系统管理员监控中间件状态的Web服务器。单一的提供获取中间件工作状态的接口不足以生动的展示中间件的状态，所有使用这些接口以网页的形式展示出来。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;4、向消息管理进程发送初始化成功消息。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;5、通过PID监控各进程状态、通过系统剩余内存监控内存消耗状态。当进程异常退出或内存低于配置文件里的报警值时，向配置文件中设置的邮箱发送警告。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;事件部分：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;1、收到消息管理进程的消息（初始化成功）：将消息中的各进程PID表赋值给本地的各进程PID表。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;2、收到消息管理进程的消息（获取工作进程状态）：将消息中的工作进程状态表赋值给本地的工作进程状态表。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;3、收到消息管理进程的消息（获取消息队列状态）：将消息中的消息队列状态赋值给本地的消息队列状态。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;4、请求（获取各进程工作状态）:通过各进程PID表获取各进程工作状态并回应。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;5、请求（获取系统内存状态）:回应系统内存状态。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;6、请求（获取html）:解析请求的html文件名并回应html文件。文件路径：static/views/html/html文件名。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;7、请求（获取图片）:解析图片名并回应图片。图片路径：static/views/pic/图片名。</p>
+</font>

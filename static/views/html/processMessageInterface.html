@@ -1,0 +1,26 @@
+<center>
+    <font face="宋体" color="black" size="4">
+        <h1>进程通信消息的结构</h1>
+    </font>
+</center>
+<font face="宋体" color="black" size="4">
+    <p>&nbsp;&nbsp;进程间通信消息的结构：{processState:Number, message:JSON}。</p>
+    <p>&nbsp;&nbsp;消息说明：用于进程间通信。进程间通信除非进程挂了否则不存在消息送不到的时候，就没有做回应。</p>
+    <p>&nbsp;&nbsp;消息参数说明：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;processState：Number类型、必选项。用于进程了解消息的类型。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const PROCESS_STATE_MESSAGE = 0;                    // 普通消息</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const PROCESS_STATE_INIT = 1;                       // 线程初始化成功</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const PROCESS_STATE_PAUSE = 2;                      // 暂停状态</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const PROCESS_STATE_RUN = 3;                        // 运行状态</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const PROCESS_STATE_GET_WORKER_PROCESS_STATE = 4;   // 获取进程资源</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const PROCESS_STATE_GET_MESSAGE_QUEUE = 5;          // 获取消息队列</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;message：JSON类型、可选项。是消息要传递的信息。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;消息示例(Constant是存放系统常量的js文件)：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;普通消息(tls进程===>消息管理进程)：{processState:Constant.PROCESS_STATE_MESSAGE,message:message}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;初始化成功消息(tls进程===>消息管理进程)：{processState:Constant.PROCESS_STATE_INIT, message:`tlsProcess: tlsProcess PID ${process.pid} 初始化完毕`}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;暂停状态：{processState:Constant.PROCESS_STATE_PAUSE, message:message}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;运行状态：暂时进程通信中没用。用于工作进程状态表中的进程状态。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;获取进程资源(监控进程==>消息管理进程)：{processState:Constant.PROCESS_STATE_GET_WORKER_PROCESS_STATE, message:"获取消息管理进程的资源状态"}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;获取消息队列(监控进程==>消息管理进程)：{processState:Constant.PROCESS_STATE_GET_MESSAGE_QUEUE, message:"获取消息队列状态"}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;消息回应：{processState:和请求相同的代码,message:针对请求的回应}</p>
+</font>

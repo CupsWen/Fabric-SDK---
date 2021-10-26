@@ -1,0 +1,44 @@
+<center>
+    <font face="宋体" color="black" size="4">
+        <h1>系统常量</h1>
+    </font>
+</center>
+<font face="宋体" color="black" size="4">
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const configurePath = path.resolve(__dirname, "..", 'configure.json');//配置文件路径</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const configure = JSON.parse(fs.readFileSync(configurePath));//配置文件JSON解析</p>
+    <p>&nbsp;&nbsp;服务器基本配置：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const NAME = configure["name"]; //TLS服务器名称</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const TLS_PORT = configure["tls_port"]; //TLS服务器名称</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const const WEB_PORT = configure["web_port"]; //Web服务器端口</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const TLS_KEY = fs.readFileSync(path.resolve(__dirname, "..", configure["tls_key"])); //TLS服务器私钥</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const TLS_CERT = fs.readFileSync(path.resolve(__dirname, "..", configure["tls_cert"])); //TLS服务器公钥</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const TLS_CA = fs.readFileSync(path.resolve(__dirname, "..", configure["tls_ca"])); //TLS服务器信任的根CA</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const CCP = configure["connection_file_path"]; //连接文件存放目录</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const WALLET_PATH = configure["wallet_path"]; //证书文件存放目录</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const PROCESS_NUMBER = configure["process_number"]; //工作进程数目</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const EMAIL_ADDRESS = configure["email_address"]; //报警邮箱地址</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const LIMIT_MEM = configure["limit_mem"]; //内存报警阈值</p>
+    <p>&nbsp;&nbsp;通信消息messageCode：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const QUERY_CERTIFICATE = 0;                // 查询证书</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const REGISTER_CERTIFICATE = 1;             // 注册证书</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const ENROLL_CERTIFICATE = 2;               // 登记证书</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const QUERY_BLOCK_BY_BLOCK_ID = 3;          // 通过区块链编号查区块</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const QUERY_BLOCK_BY_HASH = 4;              // 通过HASH查区块</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const QUERY_BLOCK_BY_TXID = 5;              // 通过交易ID查区块</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const QUERY_DATA = 6;                       // 查询数据</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const QUERY_HISTORY_DATA = 7;               // 查询历史数据</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const TRANSACTION = 8;                      // 交易</p>
+    <p>&nbsp;&nbsp;进程通信消息messageCode：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const PROCESS_STATE_MESSAGE = 0;                    // 线程初始化成功</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const PROCESS_STATE_INIT = 1;                       // 线程初始化成功</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const PROCESS_STATE_PAUSE = 2;                      // 暂停状态</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const PROCESS_STATE_RUN = 3;                        // 运行状态</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const PROCESS_STATE_GET_WORKER_PROCESS_STATE = 4;   // 获取进程资源</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const PROCESS_STATE_GET_MESSAGE_QUEUE = 5;          // 获取消息队列</p>
+    <p>&nbsp;&nbsp;不同进程的命令行输出颜色：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const LOG_TLS = "\x1B[31m";                 // TLS          红</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const LOG_MESSAGE = "\x1B[33m";             // MESSAGE      黄</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const LOG_PROCESS = "\x1B[34m";             // PROCESS      蓝</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const LOG_MANAGE = "\x1B[35m";              // MANAGE       紫</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;const LOG_CLIENT = "\x1B[32m";              // CLIENT       绿</p>
+</font>

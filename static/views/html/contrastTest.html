@@ -1,0 +1,19 @@
+<center>
+    <font face="宋体" color="black" size="4">
+        <h1>对比试验</h1>
+    </font>
+</center>
+<font face="宋体" color="black" size="4">
+    <p>&nbsp;&nbsp;使用程序模拟1000次查询和1000次交易，测使用Fabric SDK中间件和不采用Fabric SDK中间件的往返时间。</p>
+    <p>&nbsp;&nbsp;从结果来看：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;1、往返时间提升约5倍(5个工作进程)。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;2、交易的往返时间要比查询多一些，因为交易除了需要背书外还需要Orderer节点打包完毕收到分发消息才算完毕。</p>
+    <p>&nbsp;&nbsp;结论：这种测往返时间的实验方式对本系统不大适用，因为对照组选取的就不合适，适用Fabric SDK中间件肯定比不使用SDK中间件的往返时间要短。</p>
+    <center>
+        <img src="http://localhost:4000/pic?image=查询操作平均往返时间.png" width="50%" height="30%"/>
+    </center>
+    <center>
+        <img src="http://localhost:4000/pic?image=交易操作平均往返时间.png" width="50%" height="30%"/>
+    </center>
+    <p>&nbsp;&nbsp;测业务系统使用中间件和不使用中间件所消耗的资源量，有不知道如何来模拟业务系统。</p>
+</font>

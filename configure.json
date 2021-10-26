@@ -1,0 +1,21 @@
+{
+  "name": "cups",
+  "port": {
+    "process_communication_port": 4002,
+    "tls_port": 4001,
+    "web_port": 4000
+  },
+  "certificate": {
+    "tls_cert": "static/ssl-certs/server-cert.pem",
+    "tls_key": "static/ssl-certs/server-key.pem",
+    "tls_ca": "static/ssl-certs/ca.pem"
+  },
+  "connection_file_path": "static/connection_file",
+  "wallet_path": "static/wallet",
+  "worker_process_number": 9,
+  "monitor": {
+    "polling_time": 1000,
+    "email_address": "1191567189@qq.com",
+    "limit_mem": 1000
+  }
+}

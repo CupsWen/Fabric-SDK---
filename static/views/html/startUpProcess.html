@@ -1,0 +1,21 @@
+<center>
+    <font face="宋体" color="black" size="4">
+        <h1>Fabric SDK中间件启动流程</h1>
+    </font>
+</center>
+<center>
+    <img src="http://localhost:4000/pic?image=start_up_process.png" width="40%" height="20%" alt="Fabric SDK与Fabric网络交互的设计模式" />
+</center>
+<font face="宋体" color="black" size="4">
+    <p>&nbsp;&nbsp;中间件启动流程如下(系统入口是启动消息管理进程)：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;1、启动消息管理进程，消息管理进程创建请求消息队列、各进程PID表、工作进程状态表。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;2、读取配置文件信息(TLS端口、可视化监控端口、TLS通信证书、TLS通信私钥、可信任的TLS CA证书、连接文件存放文件夹路径、证书存放路径、消息处理进程数目、报警邮箱、内存阈值)。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;3、消息管理进程启动TLS通信进程、启动多个工作进程、启动中间件状态监控进程。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;4、TLS通信进程创建回应消息队列、按配置文件启动TLS服务器，启动完毕后向消息管理进程发送初始化成功的消息，等待业务系统发送过来的消息，等待消息管理进程发送过来的消息。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;5、工作进程启动后向消息管理进程发送工作进程初始化成功的消息，等待工作进程指定工作消息。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;6、中间件状态监控进程按配置文件启动Web服务器，启动完毕后想消息管理进程发送初始化成功的消息，等待消息管理进程的消息。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;7、消息管理进程接收到各进程创建初始化成功消息后，将各进程PID加入各进程PID表、工作进程状态表中所有工作进程的状态为PAUSE。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;8、将各进程的PID表发送给中间件状态监控进程，等待各进程的消息并不断监听消息队列和工作进程的状态。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;9、中间件状态监控进程监听各进程状态，提供Web可视化界面供维护人员监控中间件状态。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;至此系统第一阶段启动阶段完成。</p>
+</font>

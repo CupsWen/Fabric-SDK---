@@ -1,0 +1,169 @@
+<center>
+    <font face="宋体" color="black" size="4">
+        <h1>通信消息的结构与回应</h1>
+    </font>
+</center>
+<font face="宋体" color="black" size="4">
+    <p>&nbsp;&nbsp;业务系统发出消息的结构：{messageId:String, messageCode:Number, messageData:JSON}。</p>
+    <p>&nbsp;&nbsp;消息说明：业务系统指定Fabric SDK中间件进行区块链操作。</p>
+    <p>&nbsp;&nbsp;消息参数说明：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;messageId：任意类型、必选项。用于让业务系统确定:业务系统发送过来的消息和中间件回应的消息之间的对应关系。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;messageCode：Number类型、必选项。用于让中间件确定这个消息是要做什么操作。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0：查询证书。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1：登记证书。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2：注册证书。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3：通过区块号查区块。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4：通过Hash查块。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5：通过交易ID查区块。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6：查询数据。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7：查询历史数据。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8：交易。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;messageData：JSON类型、必选项。用于指定操作时所需要的参数。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;查询证书：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;参数说明：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;walletName：String类型、必选。用于指定证书存放目录。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userLabel：String类型、必选。用于指定用户证书位置。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;消息示例：{messageId:"0000", messageCode:0, messageData:{walletName:"Court",userLabel:"cups"}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;成功的回应示例：{"messageId":"0000","messageCode":0,"messageData":{"processState":1,"message":"证书存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例1：{"messageId":"0000","messageCode":0,"messageData":{processState:0, message: "queryCertificate>>>>>cups用户证书不存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例2：{"messageId":"0000","messageCode":0,"messageData":{processState:0, message: "queryCertificate>>>>>Court文件夹不存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例3：{"messageId":"0000","messageCode":0,"messageData":{processState:0, message: "queryCertificate>>>>>Fabric SDK回应的错误信息"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例4：{"messageId":"0000","messageCode":0,"messageData":{processState:0, message: "queryCertificate>>>>>NodeJS回应的错误信息"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;登记证书：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;参数说明：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;walletName：String类型、必选。用于指定证书存放目录。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userLabel：String类型、必选。用于指定登记员证书位置。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;connectionFileName：String类型、必选。用于指定连接文件或连接文件文件夹。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;caUrl：String类型、必选。用于指定CA地址。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userSecret：String类型、必选。用于指定登记员口令。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mspId：String类型、必选。用于指定用户MSPID。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;消息示例：{messageId:"0001", messageCode:1, messageData:{walletName:"Court",userLabel:"admin", connectionFileName:"connection-court.json", caUrl:"ca.court.com", userSecret:"adminpw", mspId:"CourtMSP"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;成功的回应示例：{"messageId": "0001","messageCode":1,"messageData":{processState:1, message: "登记证书成功，证书已存入文件系统" } }</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例1：{"messageId":"0001","messageCode":1,"messageData":{processState:0, message: "enrollCertificate>>>>>admin用户证书已存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例2：{"messageId":"0001","messageCode":1,"messageData":{processState:0, message: "enrollCertificate>>>>>连接ca.court.com超时"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例3：{"messageId":"0001","messageCode":1,"messageData":{processState:0, message: "enrollCertificate>>>>>Fabric SDK回应的错误信息"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例4：{"messageId":"0001","messageCode":1,"messageData":{processState:0, message: "enrollCertificate>>>>>NodeJS回应的错误信息"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注册证书(管理员注册、用户登记两步一块做)：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;参数说明：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;walletName：String类型、必选。用于指定证书存放目录。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;adminLabel：String类型、必选。用于指定用登记员证书位置。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;connectionFileName：String类型、必选。用于指定连接文件或连接文件文件夹。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;caUrl：String类型、必选。用于指定CA地址。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userLabel：String类型、必选。用于指定被登记用户证书的存放位置。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;role：String类型、必选。用于指定被登记用户的角色。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;affiliation：String类型、必选。用于指定被登记用户所属的部门。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mspId：String类型、必选。用于指定被被登记用户MSPID。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;attribute：JSON类型、可选。用于指定被被登记用户的属性。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;消息示例：{messageId:"0002", 2, messageData:{walletName:"Court",adminLabel:"admin", connectionFileName:"connection-court.json", caUrl:"ca.court.com",userLabel:"cups", role:"client", affiliation:"org1.department1", mspId:"CourtMSP", attribute:{"name":cups}}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;成功的回应示例：{ messageId: "0002", messageCode: 2, messageData: { processState: 1, message: "注册证书成功，证书已存入文件系统" } }</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例1：{"messageId":"0002","messageCode":2,"messageData":{processState:0, message: "registerCertificate>>>>>cups用户证书已存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例2：{"messageId":"0002","messageCode":2,"messageData":{processState:0, message: "registerCertificate>>>>>连接ca.court.com超时"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例3：{"messageId":"0002","messageCode":2,"messageData":{processState:0, message: "registerCertificate>>>>>cups用户不能重复登记"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例4：{"messageId":"0002","messageCode":2,"messageData":{processState:0, message: "registerCertificate>>>>>Fabric SDK回应的错误信息"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例5：{"messageId":"0002","messageCode":2,"messageData":{processState:0, message: "registerCertificate>>>>>NodeJS回应的错误信息"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;通过区块号查区块：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;参数说明：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;walletName：String类型、必选。用于指定证书存放目录。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userLabel：String类型、必选。用于指定登记员证书位置。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;connectionFileName：String类型、必选。用于指定连接文件或连接文件文件夹。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;channelName：String类型、必选。用于指定通道名称。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;number：Number类型、必选。用于指定区块编号。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;消息示例：{messageId:"0003", messageCode:3, messageData:{walletName:"Court",userLabel:"cups", connectionFileName:"connection-court.json", channelName:"mychannel", number:1}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;成功的回应示例：{"messageId":"0003","messageCode":3,"messageData":{"processState":1,"message":"{\"header\":{\"number\":\"1\",\"previous_hash\":\"6d6282d528a565af2e09b71fbe5ac208c3c9cdea28273969d08e57ab5ae9f7c1\",\"data_hash\":\"9e41e4f33bd2cb415bdd1f1c7cf47dc02b1bf4f8da12a06020a224d45141c6c3\"},\"data\":{\"data\":\"数据太多超出TLS缓冲区\"},\"metadata\":{\"metadata\":\"数据太多超出TLS缓冲区\"}}"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例1：{"messageId":"0003","messageCode":3,"messageData":{processState:0, message: "queryBlockByBlockID>>>>>cups用户证书不存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例2：{"messageId":"0003","messageCode":3,"messageData":{processState:0, message: "queryBlockByBlockID>>>>>Court文件夹不存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例3：{"messageId":"0003","messageCode":3,"messageData":{processState:0, message: "queryBlockByBlockID>>>>>connection-court.json不存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例4：{"messageId":"0003","messageCode":3,"messageData":{processState:0, message: "queryBlockByBlockID>>>>>加载连接文件出现问题，请检查连接文件格式"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例5：{"messageId":"0003","messageCode":3,"messageData":{processState:0, message: "queryBlockByBlockID>>>>>Fabric SDK回应的错误信息"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例6：{"messageId":"0005","messageCode":3,"messageData":{processState:0, message: "queryBlockByBlockID>>>>>NodeJS回应的错误信息"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;通过Hash查块：(有些问题，暂时不写。)</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;通过交易ID查区块：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;参数说明：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;walletName：String类型、必选。用于指定证书存放目录。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userLabel：String类型、必选。用于指定登记员证书位置。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;connectionFileName：String类型、必选。用于指定连接文件或连接文件文件夹。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;channelName：String类型、必选。用于指定通道名称。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;txid：String类型、必选。用于指定区块交易ID。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;消息示例：{messageId:"0005", messageCode:5, messageData:{walletName:"Court",userLabel:"cups", connectionFileName:"connection-court.json", channelName:"mychannel", txid:"1b8263a228ce5aea59022f4100bdf7a53abf62f159d6bd515a18b7956e6fa048"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;成功的回应示例：{"messageId":"0004","messageCode":5,"messageData":{"processState":1,"message":"{\"header\":{\"number\":\"1\",\"previous_hash\":\"6d6282d528a565af2e09b71fbe5ac208c3c9cdea28273969d08e57ab5ae9f7c1\",\"data_hash\":\"9e41e4f33bd2cb415bdd1f1c7cf47dc02b1bf4f8da12a06020a224d45141c6c3\"},\"data\":{\"data\":\"数据太多超出TLS缓冲区\"},\"metadata\":{\"metadata\":\"数据太多超出TLS缓冲区\"}}"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例1：{"messageId":"0004","messageCode":5,"messageData":{processState:0, message: "queryBlockByTxID>>>>>cups用户证书不存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例2：{"messageId":"0004","messageCode":5,"messageData":{processState:0, message: "queryBlockByTxID>>>>>Court文件夹不存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例3：{"messageId":"0004","messageCode":5,"messageData":{processState:0, message: "queryBlockByTxID>>>>>connection-court.json不存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例4：{"messageId":"0004","messageCode":5,"messageData":{processState:0, message: "queryBlockByTxID>>>>>加载连接文件出现问题，请检查连接文件格式"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例5：{"messageId":"0005","messageCode":5,"messageData":{processState:0, message: "queryBlockByTxID>>>>>Fabric SDK回应的错误信息"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例6：{"messageId":"0005","messageCode":5,"messageData":{processState:0, message: "queryBlockByTxID>>>>>NodeJS回应的错误信息"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;查询数据：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;参数说明：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;walletName：String类型、必选。用于指定证书存放目录。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userLabel：String类型、必选。用于指定登记员证书位置。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;connectionFileName：String类型、必选。用于指定连接文件或连接文件文件夹。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;channelName：String类型、必选。用于指定通道名称。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;contractName：String类型、必选。用于指定要调用的智能合约。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;contractFunctionName：String类型、必选。用于指定要被调用智能合约中的函数。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;args：String类型、必选。用于指定要被调用智能合约中的函数的参数。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;消息示例：{messageId:"0005", messageCode:6, messageData:{walletName:"Court",userLabel:"cups", connectionFileName:"connection-court.json", channelName:"mychannel",contractName:"zhh",contractFunctionName:"query", args:"1000"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;成功的回应示例：{"messageId":"0005","messageCode":6,"messageData":{"processState":1,"message":{"context":"1000","id":"1000"}}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：在成功的回应示例中，message中的内容取决于智能合约中如何编写。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例1：{"messageId":"0005","messageCode":6,"messageData":{processState:0, message: "queryData>>>>>cups用户证书不存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例2：{"messageId":"0005","messageCode":6,"messageData":{processState:0, message: "queryData>>>>>Court文件夹不存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例3：{"messageId":"0005","messageCode":6,"messageData":{processState:0, message: "queryData>>>>>connection-court.json不存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例4：{"messageId":"0005","messageCode":6,"messageData":{processState:0, message: "queryData>>>>>加载连接文件出现问题，请检查连接文件格式"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例5：{"messageId":"0005","messageCode":6,"messageData":{processState:0, message: "queryData>>>>>Fabric SDK回应的错误信息"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例6：{"messageId":"0005","messageCode":6,"messageData":{processState:0, message: "queryData>>>>>NodeJS回应的错误信息"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;查询历史数据：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;参数说明：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;walletName：String类型、必选。用于指定证书存放目录。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userLabel：String类型、必选。用于指定登记员证书位置。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;connectionFileName：String类型、必选。用于指定连接文件或连接文件文件夹。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;channelName：String类型、必选。用于指定通道名称。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;contractName：String类型、必选。用于指定要调用的智能合约。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;contractFunctionName：String类型、必选。用于指定要被调用智能合约中的函数。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;args：String类型、必选。用于指定要被调用智能合约中的函数的参数。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;消息示例：{messageId:"0006", messageCode:7, messageData:{walletName:"Court",userLabel:"cups", connectionFileName:"connection-court.json", channelName:"mychannel",contractName:"zhh",contractFunctionName:"queryHistory", args:"1000"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;成功的回应示例：{"messageId":"0006","messageCode":7,"messageData":{"processState":1,"message":[{"TxId":"ca3fa6a2066f8cdc89f43d9280d4688958b2715d8885cd7c30ff2615a2a22454","Value":{"context":"1000","id":"1000"},"Timestamp":"2020-10-16 12:26:38.179 +0000 UTC","IsDelete":"false"},{"TxId":"6af5bc91d39be804e92b9da0b2b03fab5c3a0b44527553bee562b792bd70bc04","Value":{"context":"1000","id":"1000"},"Timestamp":"2020-10-16 12:30:04.236 +0000 UTC","IsDelete":"false"},{"TxId":"8789478cfa70e82117c7d73e5de19331b57ac3a35caf5cdd45d6c66d0ef134eb","Value":{"context":"1000","id":"1000"},"Timestamp":"2020-10-16 12:30:23.086 +0000 UTC","IsDelete":"false"},{"TxId":"220d4a523f66c124c834828caa4ad2f7dd42deddc04aa0c64db4f32bd0da0336","Value":{"context":"1000","id":"1000"},"Timestamp":"2020-10-16 12:30:51.352 +0000 UTC","IsDelete":"false"},{"TxId":"c09255a9633ba39a3a36ea03d4aab4f2eae520cd1f1188bd47a3cc39d2cc868f","Value":{"context":"1000","id":"1000"},"Timestamp":"2020-10-16 12:31:05.494 +0000 UTC","IsDelete":"false"}]}}
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：在成功的回应示例中，message中的内容取决于智能合约中如何编写。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例1：{"messageId":"0006","messageCode":7,"messageData":{processState:0, message: "queryData>>>>>cups用户证书不存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例2：{"messageId":"0006","messageCode":7,"messageData":{processState:0, message: "queryData>>>>>Court文件夹不存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例3：{"messageId":"0006","messageCode":7,"messageData":{processState:0, message: "queryData>>>>>connection-court.json不存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例4：{"messageId":"0006","messageCode":7,"messageData":{processState:0, message: "queryData>>>>>加载连接文件出现问题，请检查连接文件格式"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例5：{"messageId":"0006","messageCode":7,"messageData":{processState:0, message: "queryData>>>>>Fabric SDK回应的错误信息"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例6：{"messageId":"0006","messageCode":7,"messageData":{processState:0, message: "queryData>>>>>NodeJS回应的错误信息"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;交易：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;参数说明：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;walletName：String类型、必选。用于指定证书存放目录。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userLabel：String类型、必选。用于指定登记员证书位置。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;connectionFileName：String类型、必选。用于指定连接文件或连接文件文件夹。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;channelName：String类型、必选。用于指定通道名称。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;contractName：String类型、必选。用于指定要调用的智能合约。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chaincodeVersion：String类型、必选。用于指定要被调用智能合约的版本。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chaincodeType：String类型、必选。用于指定要被调用智能合约代码类型。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;contractFunctionName：String类型、必选。用于指定要被调用智能合约中的函数。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;args：String array类型、必选。用于指定要被调用智能合约中被调用函数的参数。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;消息示例：{messageId:"0007", messageCode:8, messageData:{walletName:"Court",userLabel:"cups", connectionFileName:"connection-court.json", channelName:"mychannel",contractName:"zhh",chaincodeVersion:"1",chaincodeType:"golang", contractFunctionName:"InitMember", args:["5","1000"]}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;成功的回应示例：{"messageId":"0007","messageCode":8,"messageData":{"state":1,"message":{"transaction_id":"402ae882b2829178628d8bac0a3ee6dcf7f4b971f0c0e9f8c8976034c407f28a"}}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：在成功的回应示例中，message中的内容取决于智能合约中如何编写。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例1：{"messageId":"0006","messageCode":8,"messageData":{processState:0, message: "transaction>>>>>cups用户证书不存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例2：{"messageId":"0006","messageCode":8,"messageData":{processState:0, message: "transaction>>>>>Court文件夹不存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例3：{"messageId":"0006","messageCode":8,"messageData":{processState:0, message: "transaction>>>>>connection-court.json不存在"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例4：{"messageId":"0006","messageCode":8,"messageData":{processState:0, message: "transaction>>>>>加载连接文件出现问题，请检查连接文件格式"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例5：{"messageId":"0006","messageCode":8,"messageData":{processState:0, message: "transaction>>>>>Fabric SDK回应的错误信息"}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;失败的回应示例6：{"messageId":"0006","messageCode":8,"messageData":{processState:0, message: "transaction>>>>>NodeJS回应的错误信息"}}</p>
+    <p>&nbsp;&nbsp;Fabric SDK中间件回应消息的结构：{messageId:String, messageCode:Number, messageData:JSON}</p>
+    <p>&nbsp;&nbsp;消息说明：Fabric SDK中间件对业务系统发出消息执行后的回应。</p>
+    <p>&nbsp;&nbsp;消息参数说明：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;messageId：和业务系统发送过来的值相同。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;参数说明：与业务系统发送的消息消息结构部分相同。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;messageCode：和业务系统发送过来的值相同。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;参数说明：与业务系统发送的消息消息结构部分相同。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;messageData：业务系统发送过的消息的处理结果。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;参数说明：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;processState：Number类型。工作进程处理的状态。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0：消息执行成功。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1：消息执行出现问题。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;message：(String/JSON/JSON Array等)。若处理过程出现问题，message是错误原因。若处理过程无问题，message是执行结果。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;message：详细说明：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、证书管理类(查询证书、登记证书、注册证书)：String类型。如：{processState:1, message:"证书存在"}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、查块类(根据区块号查块、根据Hash查块、根据交易ID查块)：JSON类型或JSON ARRAY类型。如：{"processState":1,"message":"{\"header\":{\"number\":\"1\",\"previous_hash\":\"6d6282d528a565af2e09b71fbe5ac208c3c9cdea28273969d08e57ab5ae9f7c1\",\"data_hash\":\"9e41e4f33bd2cb415bdd1f1c7cf47dc02b1bf4f8da12a06020a224d45141c6c3\"},\"data\":{\"data\":\"数据太多超出TLS缓冲区\"},\"metadata\":{\"metadata\":\"数据太多超出TLS缓冲区\"}}"}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3、查询操作(通过key值查数据、通过key值查历史数据)：取决于智能合约返回值的结构。如：{processState:1, message:{context:'1000',id:'1000'}}}</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4、交易操作(通过key值查数据、通过key值查历史数据)：若成功则是交易ID。如：{processState:1, message:{transaction_id:transactionID["_transaction_id"]}</p>
+</font>

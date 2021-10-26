@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- 引入 ECharts 文件 -->
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+</html>
+<body>
+<div id="header">
+    <p>Fabric SDK中间件</p>
+</div>
+
+<div id="nav">
+    <center>
+        <p type="button">运行状态监控</p>
+        <button id="home" type="button">内存资源状态</button>
+        <button id="osResourceState" type="button">系统资源状态</button>
+        <button id="processState?processName=allProcessState" type="button">各进程状态</button>
+        <button id="processState?processName=messageQueueState" type="button">消息队列状态</button>
+        <button id="processState?processName=manageProcessState" type="button">消息管理进程状态</button>
+        <button id="processState?processName=tlsProcessState" type="button">TLS通信进程状态</button>
+        <button id="processState?processName=workerProcessState" type="button">工作进程状态</button>
+        <button id="processState?processName=monitorProcessState" type="button">监控进程状态</button>
+        <p type="button">说明部分</p>
+        <button id="html?html=background" type="button">设计背景</button>
+        <button id="html?html=benefit" type="button">采用中间件的好处</button>
+        <button id="html?html=architecture" type="button">中间件架构</button>
+        <button id="html?html=moduleDetails" type="button">架构中各功能的设计</button>
+        <button id="html?html=startUpProcess" type="button">中间件启动流程</button>
+        <button id="html?html=workflow" type="button">中间件工作流程</button>
+        <button id="html?html=contrastTest" type="button">对比试验</button>
+        <button id="html?html=nextSteps" type="button">下一步工作</button>
+        <button id="html?html=messageInterface" type="button">通信消息</button>
+        <button id="html?html=processMessageInterface" type="button">进程通信消息</button>
+        <button id="html?html=dataStructure" type="button">一些数据结构</button>
+        <button id="html?html=profileDescription" type="button">配置文件说明</button>
+        <button id="html?html=constant" type="button">系统常量</button>
+
+    </center>
+</div>
+
+<div id="chart" style="overflow-y:scroll; width: 88%; height: 850px;"></div>
+
+<div id="footer">
+    <a href="https://cupswen.github.io/">Copyright cupswen.github.io</a>
+</div>
+</body>
+
+<script type="text/javascript">
+    const mChart= echarts.init(document.getElementById("chart"));
+    axios.get("http://localhost:4000/processState").
+    then(
+        async function (response) {
+            if (response.status==200){
+                var osData = await axios.get("http://localhost:4000/osResourceState");
+                console.log(response.data);
+                console.log(osData);
+                var chartData = [];
+                chartData.push({value:osData.data.freemem,name:"系统剩余内存"+osData.data.freemem/1024/1024+"M"});
+                for (var processName in response.data){
+                    chartData.push({value: response.data[processName].memory,name:processName+"--"+response.data[processName].memory/1024/1024+"M"});
+                }
+
+                var mOption = {
+                    series : [
+                        {
+                            name: "进程内存占用情况",
+                            type: "pie",
+                            radius: "80%",
+                            data:chartData
+                        }
+                    ]
+                };
+                mChart.setOption(mOption);
+            }
+        }
+    ).catch(
+        function (error) {
+            alert(error.toString());
+        }
+    );
+
+    document.onclick=function() {
+        var obj = event.srcElement;
+        if (obj.id == "home"){
+            window.location.href = "http://localhost:4000/";
+            return 0;
+        }
+        if(obj.type == "button"){
+            const url = "http://localhost:4000/"+obj.id;
+            console.log(url);
+            axios.get(url).
+            then(
+                function (response) {
+                    if (response.status==200){
+                        console.log(response.data);
+                        /**
+                         *  清除表格
+                         * **/
+                        mChart.dispose();
+                        /**
+                         *  显示数据
+                         * **/
+                        var mTable = document.getElementById("chart");
+                        var tabelData = "";
+                        var length = 0;
+                        var totalMemory = 0;
+                        switch (obj.id) {
+                            case "osResourceState":
+                                tabelData += "CUPS:<br>";
+                                for(let index in response.data.cpus){
+                                    tabelData += "&nbsp;&nbsp;&nbsp;&nbsp;CUP "+ index +"\t";
+                                    tabelData += response.data.cpus[index]["model"] + "<br>";
+                                }
+                                tabelData += "CUP架构:<br>&nbsp;&nbsp;&nbsp;&nbsp;" + response.data.arch+"<br>";
+                                tabelData += "CUP平台:<br>&nbsp;&nbsp;&nbsp;&nbsp;" + response.data.platform+"<br>";
+                                tabelData += "操作系统类型:<br>&nbsp;&nbsp;&nbsp;&nbsp;" + response.data.type+"<br>";
+                                tabelData += "计算机总内存:<br>&nbsp;&nbsp;&nbsp;&nbsp;" + response.data.totalmem/1024/1024+"M<br>";
+                                tabelData += "计算机空余内存:<br>&nbsp;&nbsp;&nbsp;&nbsp;" + response.data.freemem/1024/1024+"M<br>";
+                                tabelData += "计算机运行时间:<br>&nbsp;&nbsp;&nbsp;&nbsp;" + response.data.uptime/60/60/24+"天<br>";
+                                break;
+                            case "processState?processName=allProcessState":
+                                tabelData += "<table border=1>";
+                                tabelData += "<tr><td>进程名称</td><td>CPU</td><td>内存消耗(M)</td><td>PID</td><td>PPID</td></tr>";
+                                for (var processName in response.data){
+                                    tabelData += "<tr><td>"+processName+"</td>"+"<td>"+response.data[processName].cpu+"</td>"+"<td>"+response.data[processName].memory/1024/1024+"</td>"+"<td>"+response.data[processName].pid+"</td>"+"<td>"+response.data[processName].ppid+"</td></tr>";
+                                }
+                                tabelData += "</table>";
+                                break;
+                            case "processState?processName=messageQueueState":
+                                tabelData += "请求消息队列<br>";
+                                tabelData += "&nbsp;&nbsp;&nbsp;&nbsp;消息队列长度:"+response.data.reqMessageQueue+"<br>";
+                                tabelData += "回应消息队列<br>";
+                                tabelData += "&nbsp;&nbsp;&nbsp;&nbsp;消息队列长度:"+response.data.resMessageQueue+"<br>";
+                                break;
+                            case "processState?processName=manageProcessState":
+                                tabelData += "进程PID:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.pid+"<br>";
+                                tabelData += "父进程PID:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.ppid+"<br>";
+                                tabelData += "内存占用:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.memory/1024/1024+"M<br>";
+                                tabelData += "运行该进程的cpu编号:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.cpu+"<br>";
+                                tabelData += "进程运行时间:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.elapsed/1000/60/60/24+"天<br>";
+                                tabelData += "用户运行时间:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.ctime/60/60/24+"天<br>";
+                                break;
+                            case "processState?processName=tlsProcessState":
+                                tabelData += "进程PID:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.pid+"<br>";
+                                tabelData += "父进程PID:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.ppid+"<br>";
+                                tabelData += "内存占用:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.memory/1024/1024+"M<br>";
+                                tabelData += "运行该进程的cpu编号:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.cpu+"<br>";
+                                tabelData += "进程运行时间:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.elapsed/1000/60/60/24+"天<br>";
+                                tabelData += "用户运行时间:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.ctime/1000/60/60/24+"天<br>";
+                                break;
+                            case "processState?processName=workerProcessState":
+                                length = 0;
+                                totalMemory = 0;
+                                for (var workerProcessName in response.data){
+                                    tabelData += "工作进程名称:\t"+workerProcessName+"<br>";
+                                    tabelData += "进程PID:\t"+response.data[workerProcessName].pid+"<br>";
+                                    tabelData += "内存占用:\t"+response.data[workerProcessName].memory/1024/1024+"M<br>";
+                                    if (response.data[workerProcessName].memory/1024/1024<60){
+                                        tabelData += "工作状态:PAUSE<br>";
+                                    }else {
+                                        tabelData += "工作状态:RUN<br>";
+                                    }
+                                    tabelData += "运行该进程的cpu编号:\t"+response.data[workerProcessName].cpu+"<br>";
+                                    tabelData += "=================================================<br>";
+                                    length += 1;
+                                    totalMemory += response.data[workerProcessName].memory/1024/1024;
+                                }
+                                tabelData += "&nbsp;&nbsp;&nbsp;&nbsp;父进程PID:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+response.data[workerProcessName].ppid+"<br>";
+                                tabelData += "&nbsp;&nbsp;&nbsp;&nbsp;总内存占用:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+totalMemory+"M<br>";
+                                tabelData += "&nbsp;&nbsp;&nbsp;&nbsp;进程运行时间:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+response.data[workerProcessName].elapsed/1000/60/60/24+"天<br>";
+                                tabelData += "&nbsp;&nbsp;&nbsp;&nbsp;用户运行时间:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+response.data[workerProcessName].ctime/1000/60/60/24+"天<br>";
+                                break;
+                            case "processState?processName=monitorProcessState":
+                                tabelData += "进程PID:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.pid+"<br>";
+                                tabelData += "父进程PID:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.ppid+"<br>";
+                                tabelData += "内存占用:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.memory/1024/1024+"M<br>";
+                                tabelData += "运行该进程的cpu编号:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.cpu+"<br>";
+                                tabelData += "进程运行时间:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.elapsed/1000/60/60/24+"天<br>";
+                                tabelData += "用户运行时间:<br>&nbsp;&nbsp;&nbsp;&nbsp;"+response.data.ctime/1000/60/60/24+"天<br>";
+                                break;
+                            default:
+                                tabelData = response.data;
+                                break;
+                        }
+                        mTable.innerHTML = tabelData;
+                    }
+                }).
+            catch(function (error) {
+                alert(error.toString());
+            });
+        }
+    };
+</script>
+<style>
+    #header {
+        background-color: #000000;
+        color:white;
+        text-align:left;
+        padding:5px;
+    }
+    #nav {
+        line-height:30px;
+        background-color:#eeeeee;
+        height:100%;
+        width:10%;
+        float:left;
+        padding:5px;
+    }
+    button{
+        width:100%;
+        padding:4%;
+    }
+    #chart{
+        float: left;
+        padding:10px;
+    }
+    #footer {
+        background-color:black;
+        color:white;
+        clear:both;
+        opacity: 0.6;
+        text-align:center;
+        padding:5px;
+    }
+</style>

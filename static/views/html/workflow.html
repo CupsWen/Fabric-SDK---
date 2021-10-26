@@ -1,0 +1,19 @@
+<center>
+    <font face="宋体" color="black" size="4">
+        <h1>Fabric SDK中间件工作流程</h1>
+    </font>
+</center>
+<center>
+    <img src="http://localhost:4000/pic?image=workflow.png" width="40%" height="25%" alt="Fabric SDK与Fabric网络交互的设计模式" />
+</center>
+<font face="宋体" color="black" size="4">
+    <p>&nbsp;&nbsp;中间件工作流程如下(以下消息均为普通消息)：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;1、TLS通信进程与业务系统相互认证身份后建立TLS通信连接。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;2、TLS通信进程检查回应消息队列中是否有消息，若有消息则将消息发送给业务系统。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;3、业务系统发送消息;TLS通信进程接收到业务系统发送过来的消息。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;4、TLS通信进程对消息进行检查无异常后，将消息发送给消息管理进程；消息管理进程收到TLS通信进程发送过来的消息后将消息存入请求消息队列。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;5、消息管理进程检测到请求消息队列中有消息且工作进程组有空闲进程，则从消息队列中取出一个消息发送给工作进程，并将工作进程状态表中的该进程的状态改变为RUN状态；工作进程接收到消息管理进程发送的消息。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;6、消息管理进程，按照消息要求执行相应的功能并将处理结果返回给消息管理进程；消息管理进程接收到工作进程发送过来的消息。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;7、消息管理进程将工作进程状态表中该进程的状态改变为PAUSE状态，并将消息发送给TLS通信进程；TLS通信进程接收到消息管理进程发送过来的消息。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;8、TLS通信进程先判断业务系统是否在线，若在线则将消息发送给业务系统；若业务系统不在线，则将消息存入TLS通信进程管理的消息队列，等待业务系统上线再讲消息发送给业务系统。业务系统接收到发送给Fabric SDK中间件的处理结果。</p>
+</font>

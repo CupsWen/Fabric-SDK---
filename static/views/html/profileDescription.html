@@ -1,0 +1,20 @@
+<center>
+    <font face="宋体" color="black" size="4">
+        <h1>Fabric SDK中间件配置文件说明</h1>
+    </font>
+</center>
+<font face="宋体" color="black" size="4">
+    <p>&nbsp;&nbsp;配置文件说明：用以指定Fabric SDK中间件的一些配置信息。配置文件路径在./configure.json。格式为JSON格式，必选。</p>
+    <p>&nbsp;&nbsp;参数说明：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;tls_port：Number类型、必选。用以指定TLS通信服务器监听的端口。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;web_port：Number类型、必选。用以指定Fabric SDK中间件工作状态可视化Web服务器监听端口。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;tls_cert：String类型、必选。用以指定TLS通信服务器证书。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;tls_key：String类型、必选。用以指定TLS通信服务器私钥。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;tls_ca：String类型、必选。用以指定TLS通信服务器信任的根CA。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;connection_file_path：String类型、必选。用以指定连接文件存放目录。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;wallet_path：String类型、必选。用以指定证书存放目录。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;process_number：Number类型，必选。用以指定需要启动的工作进程数目。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：工作进程数目不能太多，一般指定为CUP核数-3。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;email_address：String类型，必选。用以指定报警邮箱。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;limit_mem：Number类型，必选。用以指定。</p>
+</font>

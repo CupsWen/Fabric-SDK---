@@ -1,0 +1,21 @@
+{
+    "CN": "server",
+    "hosts": [
+      "localhost",
+      "127.0.0.1",
+      "192.168.1.205"
+    ],
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+           "C": "CN",
+           "ST": "HeNan",
+           "L": "ZhengZhou",
+           "O": "",
+           "OU": ""
+        }
+    ]
+}

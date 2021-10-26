@@ -1,0 +1,11 @@
+cfssl.exe gencert -initca ca-csr.json | cfssljson.exe -bare ca -
+
+./cfssl.exe gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=server server-csr.json | ./cfssljson.exe -bare server
+
+./cfssl.exe gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=client client-csr.json | ./cfssljson.exe -bare client
+
+
+
+openssl x509 -req -in ca.csr -signkey ca-key.pem -out ca.crt
+openssl x509 -req -CA ca.crt -CAkey ca-key.pem -CAcreateserial -in server.csr -out server.crt
+openssl x509 -req -CA ca.crt -CAkey ca-key.pem -CAcreateserial -in client.csr -out client.crt

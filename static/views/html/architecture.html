@@ -1,0 +1,20 @@
+<center>
+    <font face="宋体" color="black" size="4">
+        <h1>Fabric SDK中间件的架构</h1>
+    </font>
+</center>
+<center>
+    <img src="http://localhost:4000/pic?image=architecture.png" width="25%" height="15%" alt="Fabric SDK与Fabric网络交互的设计模式" />
+</center>
+<font face="宋体" color="black" size="4">
+    <p>&nbsp;&nbsp;Fabric SDK中间件主要包含：通信、消息管理、消息处理、负载均衡、日志管理和中间件状态监控，共六块。</p>
+    <p>&nbsp;&nbsp;1、通信:主要负责与业务系统进行通信。</p>
+    <p>&nbsp;&nbsp;2、消息管理:负责维护消息队列以及进程之间的通信。</p>
+    <p>&nbsp;&nbsp;3、消息处理:对处理业务系统发送过来的消息进行处理。</p>
+    <p>&nbsp;&nbsp;4、负载均衡:负责区块链业务的负载均衡任务。</p>
+    <p>&nbsp;&nbsp;5、日志管理:负责对中间件运行状态进行记录。</p>
+    <p>&nbsp;&nbsp;6、中间件状态监控:负责监控中间件中各进程的状态以及系统资源状态，当出现问题及时报警。</p>
+    <p>&nbsp;&nbsp;请求消息队列。</p>
+    <p>&nbsp;&nbsp;1、请求消息队列:负责操作消息存放队列。</p>
+    <p>&nbsp;&nbsp;2、回应消息队列:负责回应消息存放队列。</p>
+</font>

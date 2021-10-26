@@ -1,0 +1,27 @@
+<center>
+    <font face="宋体" color="black" size="4">
+        <h1>一些数据结构</h1>
+    </font>
+</center>
+<font face="宋体" color="black" size="4">
+    <p>&nbsp;&nbsp;一些数据结构：</p>
+    <p>&nbsp;&nbsp;1、消息。{messageId:任意类型,code:Number,messageData:JSON}。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;参数说明：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;messageId：任意类型，必选。消息编号。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;messageCode：Number，必选。消息操作代码。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;messageData：JSON，必选。消息操作数据部分。</p>
+    <p>&nbsp;&nbsp;2、消息队列。是一个类，数据结构：{messageList:List,top:Number}。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;参数说明：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;messageList：List。用一个List存储消息。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;top：Number。队列的指针。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;方法：</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;constructor()。构造方法。说明：无参数。返回值：消息队列对象。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;Push()。参数：message：JSON类型，必选。返回值：无。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;Pop()。参数：无。返回值：一个消息对象。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;Length()。参数：无。返回值：队列长度，Number类型。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;GetAll()。参数：无。返回值：所有消息，List类型。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;IsHaveMessage()。参数：无。返回值：Boolean。0代表队列中无数据；1代表有数据。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;toString()。参数：无。返回值：String类型。`messageQueue:{top:${this.top},Length:${this.Length()}}`。</p>
+    <p>&nbsp;&nbsp;3、各进程PID表。JSON类型：{key1：value1，key2：value2，...}。</p>
+    <p>&nbsp;&nbsp;4、工作进程状态表。JSON类型：{key1：value1，key2：value2，..}。</p>
+</font>
